@@ -79,10 +79,26 @@ public class Philosopher extends Thread {
 		print("закончил свой жизненный цикл.");
 	}
 
+	@Override
+	public String toString() {
+		return String.format("%s [вилки: слева=%d, справа=%d}", getName(), leftFork.getId(), rightFork.getId());
+	}
+
 	boolean takeFork(Fork fork) {
+		if (PhilosopherSettings.enableBalancing) {
+			return fork.lockByPhilosopher(id);
+		} else {
+			fork.lock();
+			return true;
+		}
 	}
 
 	void releaseFork(Fork fork) {
+		if (PhilosopherSettings.enableBalancing) {
+			fork.unlockByPhilosopher(id);
+		} else {
+			fork.unlock();
+		}
 	}
 
 	void lunch() throws InterruptedException {
